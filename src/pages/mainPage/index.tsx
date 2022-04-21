@@ -8,7 +8,7 @@ const MainPage = () => {
             </span>
             <SpeakBar />
             <footer>
-                Authors: Gustavo Lee & Carlos
+                Authors: Gustavo & Carlos
             </footer>
         </div>
     )
