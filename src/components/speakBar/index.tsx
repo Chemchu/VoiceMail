@@ -39,7 +39,7 @@ const SpeakBar = (props: { setPhrase: React.Dispatch<React.SetStateAction<string
     if (error) return <p>Este navegador no es compatible con la funcionalidad de Speech-to-Text 🤷‍</p>;
 
     return (
-        <div className='border rounded-lg w-1/3 cursor-default'>
+        <div className='border rounded-lg w-1/3 cursor-default shadow-lg'>
             <div className="flex items-center w-full h-12 rounded-xl focus-within:shadow-lg bg-white overflow-hidden px-2">
                 <span className="w-full list-none font-semibold">
                     {
