@@ -11,16 +11,14 @@ const SpeakBar = (props: { setPhrase: React.Dispatch<React.SetStateAction<string
     } = useSpeechRecognition();
 
     useEffect(() => {
-        if (transcript.length > 0) {
-            props.setPhrase(transcript);
-        }
-
-    }, [transcript])
-
-    useEffect(() => {
         if (listening) {
             resetTranscript()
             props.setPhrase("");
+            return;
+        }
+
+        if (transcript.length > 0) {
+            props.setPhrase(transcript);
         }
     }, [listening]);
 

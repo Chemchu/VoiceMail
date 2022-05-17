@@ -10,6 +10,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Auth0Provider
       domain="dev-99puzus9.us.auth0.com"
       clientId="h0jCOVlQhZ4eq1IQYlntSSyJSYHnuRoY"
+      audience='https://dev-99puzus9.us.auth0.com/api/v2/'
+      scope='openid'
       redirectUri={window.location.origin}
     >
       <App />

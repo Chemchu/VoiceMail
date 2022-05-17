@@ -11,9 +11,24 @@ const MainPage = () => {
     const [phrase, setPhrase] = useState<string>("");
     const [apiKey, setApiKey] = useState<string>("");
     const [opciones, setOpciones] = useState<string[]>([]);
-    const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
+    const { user, isAuthenticated, getAccessTokenSilently, buildAuthorizeUrl } = useAuth0();
 
     //const clientID = "186645883347-gaupgc2vlerfpb8to0150eppihoss2gn.apps.googleusercontent.com";
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            getAccessTokenSilently()
+                .then((t: string) => {
+                    setApiKey(t)
+                    console.log(t);
+
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+        }
+    }, [isAuthenticated])
+
 
     useEffect(() => {
         if (!phrase) { return; }
@@ -33,9 +48,9 @@ const MainPage = () => {
             setOpciones(resJson.opciones);
         }
         // Llamada a API
-        QueryAPI(phrase, apiKey);
+        //QueryAPI(phrase, apiKey);
 
-        //setOpciones(["Opción 1", "Opción 2", "Opción 3"]);
+        setOpciones(["Opción 1", "Opción 2", "Opción 3"]);
     }, [phrase])
 
     if (!isAuthenticated) {
