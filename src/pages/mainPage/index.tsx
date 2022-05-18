@@ -1,4 +1,3 @@
-import { useAuth0 } from "@auth0/auth0-react";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import LoginButton from "../../components/loginButton";
@@ -6,54 +5,41 @@ import LogoHeader from "../../components/logoHeader";
 import LogoutButton from "../../components/logoutButton";
 import OptionList from "../../components/optionList";
 import SpeakBar from "../../components/speakBar";
+import useAuthContext from "../../context/authContext";
 
 const MainPage = () => {
+    const { Token, SetToken } = useAuthContext();
     const [phrase, setPhrase] = useState<string>("");
-    const [apiKey, setApiKey] = useState<string>("");
     const [opciones, setOpciones] = useState<string[]>([]);
-    const { user, isAuthenticated, getAccessTokenSilently, buildAuthorizeUrl } = useAuth0();
-
-    //const clientID = "186645883347-gaupgc2vlerfpb8to0150eppihoss2gn.apps.googleusercontent.com";
-
-    useEffect(() => {
-        if (isAuthenticated) {
-            getAccessTokenSilently()
-                .then((t: string) => {
-                    setApiKey(t)
-                    console.log(t);
-
-                })
-                .catch((err) => {
-                    console.log(err);
-                })
-        }
-    }, [isAuthenticated])
-
 
     useEffect(() => {
         if (!phrase) { return; }
 
-        const QueryAPI = async (query: string, apiKey: string) => {
-            const res = await fetch('http://www.voicemail.com/api/query', {
+        const QueryAPI = async (query: string, token: string) => {
+            const res = await fetch('http://localhost:5000/query', {
+                mode: 'cors',
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', },
                 body: JSON.stringify({
                     query: query,
-                    apiKey: apiKey
-                })
+                    token: token
+                }),
+                redirect: "follow"
             });
 
             const resJson = await res.json();
 
-            setOpciones(resJson.opciones);
+            console.log(resJson);
+
+            //setOpciones(resJson.opciones);
+            //setOpciones(["Opción 1", "Opción 2", "Opción 3"]);
         }
         // Llamada a API
-        //QueryAPI(phrase, apiKey);
+        QueryAPI(phrase, Token);
 
-        setOpciones(["Opción 1", "Opción 2", "Opción 3"]);
     }, [phrase])
 
-    if (!isAuthenticated) {
+    if (!Token) {
         return (
             <div className="flex flex-col w-full h-full justify-start items-center bg-white-500">
                 <div className="flex w-full h-20 justify-end p-4">
