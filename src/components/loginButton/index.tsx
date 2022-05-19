@@ -1,22 +1,30 @@
 import React from "react";
 import useAuthContext from "../../context/authContext";
+import { notifyError, notifyPromise } from "../../utils/toastify";
 
 const LoginButton = () => {
     const { Token, SetToken } = useAuthContext();
 
     const loginWithRedirect = async () => {
-        const res = await fetch('http://localhost:5000/authenticate', {
-            mode: 'cors',
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: Token }),
-            redirect: "follow"
-        })
+        try {
+            const reqPromise = fetch('http://localhost:5000/authenticate', {
+                mode: 'cors',
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: Token }),
+                redirect: "follow"
+            })
+            const res = await notifyPromise(reqPromise, undefined, "Error, el servidor puede estar apagado", "Sesión iniciada");
+            const jsonRes = await res.text();
+            const response = JSON.parse(jsonRes);
 
-        const jsonRes = await res.text();
-        const response = JSON.parse(jsonRes);
+            SetToken(response.token);
+        }
+        catch (e) {
+            //notifyError("Error de conexión. Tal vez el servidor no esté activo");
+            console.log(e);
+        }
 
-        SetToken(response.token);
     }
 
     return (

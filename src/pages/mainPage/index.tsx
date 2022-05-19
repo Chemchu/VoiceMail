@@ -6,6 +6,7 @@ import LogoutButton from "../../components/logoutButton";
 import OptionList from "../../components/optionList";
 import SpeakBar from "../../components/speakBar";
 import useAuthContext from "../../context/authContext";
+import { notifyError, notifySuccess } from "../../utils/toastify";
 
 const MainPage = () => {
     const { Token, SetToken } = useAuthContext();
@@ -16,23 +17,25 @@ const MainPage = () => {
         if (!phrase) { return; }
 
         const QueryAPI = async (query: string, token: string) => {
-            const res = await fetch('http://localhost:5000/query', {
-                mode: 'cors',
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', },
-                body: JSON.stringify({
-                    query: query,
-                    token: token
-                }),
-                redirect: "follow"
-            });
+            try {
+                const res = await fetch('http://localhost:5000/query', {
+                    mode: 'cors',
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', },
+                    body: JSON.stringify({
+                        query: query,
+                        token: token
+                    }),
+                });
 
-            const resJson = await res.json();
+                const resJson = await res.json();
 
-            console.log(resJson);
-
-            //setOpciones(resJson.opciones);
-            //setOpciones(["Opción 1", "Opción 2", "Opción 3"]);
+                //setOpciones(resJson.opciones);
+                //setOpciones(["Opción 1", "Opción 2", "Opción 3"]);
+            }
+            catch (e) {
+                notifyError("Error de conexión. Tal vez el servidor no esté activo");
+            }
         }
         // Llamada a API
         QueryAPI(phrase, Token);
@@ -42,10 +45,10 @@ const MainPage = () => {
     if (!Token) {
         return (
             <div className="flex flex-col w-full h-full justify-start items-center bg-white-500">
-                <div className="flex w-full h-20 justify-end p-4">
+                <div className="flex w-full h-20 justify-start p-4">
                     <LoginButton />
                 </div>
-                <div className="flex flex-col w-full h-full justify-center items-center">
+                <div className="flex flex-col gap-4 w-full h-full justify-center items-center">
                     <div className="text-8xl text-gray-600">
                         <LogoHeader />
                     </div>
@@ -57,10 +60,10 @@ const MainPage = () => {
 
     return (
         <div className="flex flex-col w-full h-full justify-start items-center bg-white-500">
-            <div className="flex w-full h-20 justify-end p-4">
+            <div className="flex w-full h-20 justify-start p-4">
                 <LogoutButton />
             </div>
-            <div className="flex flex-col w-full h-full justify-center items-center">
+            <div className="flex flex-col gap-4 w-full h-full justify-center items-center">
                 <div className="text-8xl text-gray-600">
                     <LogoHeader />
                 </div>

@@ -2,7 +2,9 @@ import React, { useContext, createContext, useState } from 'react';
 
 interface GoogleAuth {
     Token: string,
-    SetToken: Function,
+    SetToken: React.Dispatch<React.SetStateAction<string>>,
+    Steps: string[],
+    SetSteps: React.Dispatch<React.SetStateAction<string[]>>,
 }
 
 //Context
@@ -11,10 +13,13 @@ const AppContext = createContext<GoogleAuth>({} as GoogleAuth);
 //Provider
 export const AuthContextProvider = ({ children }: { children: React.ReactNode }) => {
     const [token, setToken] = useState<string>("")
+    const [steps, setSteps] = useState<string[]>([])
 
     const values: GoogleAuth = {
         Token: token,
         SetToken: setToken,
+        Steps: steps,
+        SetSteps: setSteps
     }
 
     // Interface donde será expuesto como proveedor y envolverá la App.
