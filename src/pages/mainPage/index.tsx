@@ -9,14 +9,14 @@ import useAuthContext from "../../context/authContext";
 import { notifyError, notifySuccess } from "../../utils/toastify";
 
 const MainPage = () => {
-    const { Token, SetToken } = useAuthContext();
+    const { Token, SetToken, Steps } = useAuthContext();
     const [phrase, setPhrase] = useState<string>("");
     const [opciones, setOpciones] = useState<string[]>([]);
 
     useEffect(() => {
         if (!phrase) { return; }
 
-        const QueryAPI = async (query: string, token: string) => {
+        const QueryAPI = async (query: string, token: string, steps: string[]) => {
             try {
                 const res = await fetch('http://localhost:5000/query', {
                     mode: 'cors',
@@ -24,7 +24,8 @@ const MainPage = () => {
                     headers: { 'Content-Type': 'application/json', },
                     body: JSON.stringify({
                         query: query,
-                        token: token
+                        token: token,
+                        steps: steps
                     }),
                 });
 
@@ -38,7 +39,7 @@ const MainPage = () => {
             }
         }
         // Llamada a API
-        QueryAPI(phrase, Token);
+        QueryAPI(phrase, Token, Steps);
 
     }, [phrase])
 
