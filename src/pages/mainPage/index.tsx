@@ -9,15 +9,27 @@ import useAuthContext from "../../context/authContext";
 import { notifyError, notifySuccess } from "../../utils/toastify";
 
 const MainPage = () => {
-    const { Token, SetToken, Steps } = useAuthContext();
-    const [phrase, setPhrase] = useState<string>("");
+    const { Token, Steps, SetSteps } = useAuthContext();
+    const [phrases, setPhrase] = useState<string[]>([]);
+    const [intent, setIntent] = useState<string | null>(null);
     const [opciones, setOpciones] = useState<string[]>([]);
 
     useEffect(() => {
-        if (!phrase) { return; }
+        if (!Steps) { return; }
+        if (Steps[Steps.length - 1] === "DONE") { setPhrase([]); notifySuccess("Correo enviado correctamente"); return; }
 
-        const QueryAPI = async (query: string, token: string, steps: string[]) => {
+        notifySuccess(Steps[Steps.length - 1])
+
+    }, [Steps])
+
+
+    useEffect(() => {
+        if (!phrases) { return; }
+
+        const QueryAPI = async (query: string[], token: string, steps: string[], intent: string | null) => {
             try {
+                if (query.length <= 0) { return; }
+
                 const res = await fetch('http://localhost:5000/query', {
                     mode: 'cors',
                     method: 'POST',
@@ -25,23 +37,26 @@ const MainPage = () => {
                     body: JSON.stringify({
                         query: query,
                         token: token,
-                        steps: steps
+                        steps: steps,
+                        intent: intent
                     }),
                 });
 
                 const resJson = await res.json();
 
-                //setOpciones(resJson.opciones);
-                //setOpciones(["Opción 1", "Opción 2", "Opción 3"]);
+                if (intent === null) {
+                    setIntent(resJson.intent);
+                }
+                SetSteps(resJson.steps)
             }
             catch (e) {
                 notifyError("Error de conexión. Tal vez el servidor no esté activo");
             }
         }
         // Llamada a API
-        QueryAPI(phrase, Token, Steps);
+        QueryAPI(phrases, Token, Steps, intent);
 
-    }, [phrase])
+    }, [phrases])
 
     if (!Token) {
         return (
@@ -68,11 +83,14 @@ const MainPage = () => {
                 <div className="text-8xl text-gray-600">
                     <LogoHeader />
                 </div>
-                <SpeakBar setPhrase={setPhrase} />
+                <SpeakBar phrases={phrases} setPhrase={setPhrase} />
+                <button className="text-transparent hover:text-black" onClick={() => { SetSteps([]); setIntent(null); setPhrase([]) }}>
+                    Reset
+                </button>
                 <AnimatePresence>
                     {
                         opciones.length > 0 &&
-                        phrase &&
+                        phrases &&
                         <OptionList opciones={opciones} />
                     }
                 </AnimatePresence>

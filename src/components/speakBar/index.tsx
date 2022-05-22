@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useEffect } from "react";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
-const SpeakBar = (props: { setPhrase: React.Dispatch<React.SetStateAction<string>> }) => {
+const SpeakBar = (props: { phrases: string[], setPhrase: React.Dispatch<React.SetStateAction<string[]>> }) => {
     const {
         transcript,
         listening,
@@ -13,12 +13,11 @@ const SpeakBar = (props: { setPhrase: React.Dispatch<React.SetStateAction<string
     useEffect(() => {
         if (listening) {
             resetTranscript()
-            props.setPhrase("");
             return;
         }
 
         if (transcript.length > 0) {
-            props.setPhrase(transcript);
+            props.setPhrase(p => [...p, transcript])
         }
     }, [listening]);
 
@@ -29,7 +28,7 @@ const SpeakBar = (props: { setPhrase: React.Dispatch<React.SetStateAction<string
             <div className="flex items-center w-full h-12 rounded-xl focus-within:shadow-lg bg-white overflow-hidden px-2">
                 <span className="w-full list-none font-semibold">
                     <span>
-                        {transcript}
+                        {listening ? transcript : props.phrases[props.phrases.length - 1]}
                     </span>
                 </span>
                 {
